@@ -1,2 +1,2 @@
 # Blockchains
-This repository is dedicated to blockchain and its applications.
+This repository contains projects dedicated to blockchains and its applications.
