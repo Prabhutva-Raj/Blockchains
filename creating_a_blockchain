@@ -5,10 +5,10 @@ import datetime
 import hashlib
 import json
 from flask import Flask, jsonify
-# object of flask class is the web application iteself
-# jsonify : used to return the messages from postman when we interact with our blockchain
+# jsonify : will help in returning the messages from postman when we interact with our blockchain
 
-#------------------ part 1 : Building a blockchain-------------------------------
+
+#----------------- part 1 : Building a blockchain----------------------------------------------------
 
 class Blockchain:
     
@@ -64,7 +64,7 @@ class Blockchain:
         block_index = 1
         while block_index < len(chain):
             block = chain[block_index]
-            if block['previous_hash'] != self.hash(previous_hash):
+            if block['previous_hash'] != self.hash(previous_block):
                 return False
             
             previous_proof = previous_block['proof']
@@ -78,7 +78,7 @@ class Blockchain:
         return True
             
     
-    
+   
 
 #------------------ Part 2 - Mining a BlockChain-------------------------------------------------------------------------
 
@@ -91,7 +91,7 @@ blockchain = Blockchain()
 # we will first make a get request to mine a block, by solving proof of work problem
 # then we will make another get request to get the whole chain
 
-# mining a new block (making a mining request)------->>
+# mining a new block (making a mining request)
 @app.route('/mine_block', methods=['GET'])  #http://127.0.0.1:5000/
 def mine_block():
     #how do we mine a block, solve the POW problem by finding the proof based on previous proof
@@ -111,7 +111,7 @@ def mine_block():
     return jsonify(response), 200   # 200 = Http Ok
 
 
-# getting the full blockchain-------->>
+# getting the full blockchain
 @app.route('/get_chain', methods=['GET'])
 def get_chain():
     response = {'chain' : blockchain.chain,
@@ -120,11 +120,22 @@ def get_chain():
     return jsonify(response), 200
 
 
+# check validity of the chain
+@app.route('/get_chain_validity', methods=['GET'])   
+def get_chain_validity():
+    validity = blockchain.is_chain_valid(blockchain.chain)
+    if validity:
+        response = {'validity' : 'Blockchain is valid'}
+    else:
+        response = {'validity' : 'Blockchain is NOT valid'}
+    return jsonify(response), 200
+
+
 
 # running the app --------------------------------------------------
 app.run(host='0.0.0.0', port=5000)    
 
-    
+       
     
     
             
