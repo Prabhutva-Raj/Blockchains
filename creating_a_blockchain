@@ -1,16 +1,15 @@
 """Created on Mon Jun  8 13:07:24 2020"""
 
-# Module 1 :: Creating a Blockchain
-
 # importing the libraries
 import datetime
 import hashlib
 import json
 from flask import Flask, jsonify
+
 # object of flask class is the web application iteself
 # jsonify : used to return the messages from postman when we interact with our blockchain
 
-# part 1 : Building a blockchain-------------------------------
+#----------------------------------part 1 : Building a blockchain----------------------------------------
 
 class Blockchain:
     
@@ -38,7 +37,8 @@ class Blockchain:
     
     # proof of work : POW is the number that miners have to find to mine a new block
     # (hard to find but easy to verify)
-    # hard to find : so that it can  have much value (cryptocurency would have been of less value)
+    # hard to find : so that it can have much value (cryptocurency would have been of less value if POW was easy to find)
+    
     def proof_of_work(self, previous_proof):
         new_proof = 1
         check_proof = False
@@ -61,6 +61,7 @@ class Blockchain:
     # check whether each block has correct POW
     # prev hash of each block == prev hash in each block
     #( by these two....blockchains is valid)
+    
     def is_chain_valid(self, chain):
         previous_block = chain[0]
         block_index = 1
@@ -78,6 +79,19 @@ class Blockchain:
             previous_block = block
             block_index+=1
         return True
+        
+       
+       
+       
+        
+#------------------------------------------- Part 2 - Mining a BlockChain---------------------------------------------------
+
+# creating a Webapp (flask based, by just creating object of flask class)
+app = Flask(__name__)
+
+# creating a blockchain (by creating object of blockchain class)
+
+
             
     
     
