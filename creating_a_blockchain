@@ -95,7 +95,7 @@ blockchain = Blockchain()
 # we will first make a get request to mine a block, by solving proof of work problem
 # then we will make another get request to get the whole chain
 
-# mining a new block (making a mining request)
+# mining a new block (making a mining request)----->
 @app.route('/mine_block', methods=['GET'])  #http://127.0.0.1:5000/
 def mine_block():
     #how do we mine a block, solve the POW problem by finding the proof based on previous proof
@@ -113,6 +113,15 @@ def mine_block():
                 'previous_hash' : block['previous_hash']
                 }
     return jsonify(response), 200   # 200 = Http Ok
+       
+ 
+# getting the full blockchain----->
+@app.route('/get_chain', methods=['GET'])
+def get_chain():
+    response = {'chain' : blockchain.chain,
+                'length' : len(blockchain.chain)
+                }
+    return jsonify(response), 200
 
     
     
