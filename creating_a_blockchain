@@ -1,28 +1,26 @@
 """Created on Mon Jun  8 13:07:24 2020"""
 
-# Module 1 :: Creating a Blockchain
-
 # importing the libraries
 import datetime
 import hashlib
 import json
 from flask import Flask, jsonify
-# object of flask class is the web application iteself
-# jsonify : used to return the messages from postman when we interact with our blockchain
+# jsonify : will help in returning the messages from postman when we interact with our blockchain
 
-# part 1 : Building a blockchain-------------------------------
+
+#----------------- part 1 : Building a blockchain----------------------------------------------------
 
 class Blockchain:
     
     def __init__(self): #variables preceeded by self are the variables of object 
         self.chain = []
-        self.create_block(proof=1 , previos_hash='0')   # method called here to create first block (genesis block) of blockchain
+        self.create_block(proof=1 , previous_hash='0')   # method called here to create first block (genesis block) of blockchain
         # proof : each block will have its proof (an arbitarty no)
         
     def create_block(self, proof, previous_hash):
         block = {'index': len(self.chain)+1 ,
                  'timestamp': str(datetime.datetime.now()) ,
-                 'proof' : proof(),
+                 'proof' : proof,
                  'previous_hash' : previous_hash
                  }
         self.chain.append(block)
@@ -66,7 +64,7 @@ class Blockchain:
         block_index = 1
         while block_index < len(chain):
             block = chain[block_index]
-            if block['previous_hash'] != self.hash(previous_hash):
+            if block['previous_hash'] != self.hash(previous_block):
                 return False
             
             previous_proof = previous_block['proof']
@@ -80,9 +78,64 @@ class Blockchain:
         return True
             
     
+   
+
+#------------------ Part 2 - Mining a BlockChain-------------------------------------------------------------------------
+
+# creating a Webapp (flask based, by just creating object of flask class)
+app = Flask(__name__)
+
+# creating a blockchain (by creating object of blockchain class)
+blockchain = Blockchain()
+
+# we will first make a get request to mine a block, by solving proof of work problem
+# then we will make another get request to get the whole chain
+
+# mining a new block (making a mining request)
+@app.route('/mine_block', methods=['GET'])  #http://127.0.0.1:5000/
+def mine_block():
+    #how do we mine a block, solve the POW problem by finding the proof based on previous proof
+    previous_block = blockchain.get_previous_block()
+    previous_proof = previous_block['proof']
+
+    proof = blockchain.proof_of_work(previous_proof)      # now this proof will become the proof of newly added block
+    previous_hash = blockchain.hash(previous_block) 
+    block = blockchain.create_block(proof,previous_hash )
     
-    
-    
+    response = {'message' : 'Congrats, you\'ve mined the block!',  #since postman requires response in json format, dictionary is used for the response
+                'index' : block['index'],
+                'timestamp' : block['timestamp'],
+                'proof' : block['proof'],
+                'previous_hash' : block['previous_hash']
+                }
+    return jsonify(response), 200   # 200 = Http Ok
+
+
+# getting the full blockchain
+@app.route('/get_chain', methods=['GET'])
+def get_chain():
+    response = {'chain' : blockchain.chain,
+                'length' : len(blockchain.chain)
+                }
+    return jsonify(response), 200
+
+
+# check validity of the chain
+@app.route('/get_chain_validity', methods=['GET'])   
+def get_chain_validity():
+    validity = blockchain.is_chain_valid(blockchain.chain)
+    if validity:
+        response = {'validity' : 'Blockchain is valid'}
+    else:
+        response = {'validity' : 'Blockchain is NOT valid'}
+    return jsonify(response), 200
+
+
+
+# running the app --------------------------------------------------
+app.run(host='0.0.0.0', port=5000)    
+
+       
     
     
             
