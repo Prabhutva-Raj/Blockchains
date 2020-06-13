@@ -92,7 +92,28 @@ app = Flask(__name__)
 # creating a blockchain (by creating object of blockchain class)
 blockchain = Blockchain()
 
-            
+# we will first make a get request to mine a block, by solving proof of work problem
+# then we will make another get request to get the whole chain
+
+# mining a new block (making a mining request)
+@app.route('/mine_block', methods=['GET'])  #http://127.0.0.1:5000/
+def mine_block():
+    #how do we mine a block, solve the POW problem by finding the proof based on previous proof
+    previous_block = blockchain.get_previous_block()
+    previous_proof = previous_block['proof']
+
+    proof = blockchain.proof_of_work(previous_proof)      # now this proof will become the proof of newly added block
+    previous_hash = blockchain.hash(previous_block) 
+    block = blockchain.create_block(proof,previous_hash )
+    
+    response = {'message' : 'Congrats, you\'ve mined the block!',  #since postman requires response in json format, dictionary is used for the response
+                'index' : block['index'],
+                'timestamp' : block['timestamp'],
+                'proof' : block['proof'],
+                'previous_hash' : block['previous_hash']
+                }
+    return jsonify(response), 200   # 200 = Http Ok
+
     
     
     
